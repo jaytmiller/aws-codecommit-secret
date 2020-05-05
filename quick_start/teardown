@@ -1,0 +1,31 @@
+#! /bin/bash -e
+
+source your-vars.env
+
+echo "WARNING WARNING WARNING"
+echo "This script will delete the local secrets repo ${REPO_NAME}"
+echo "as well as the remote CodeCommit repo ${CC_REPO_NAME}."
+echo "It will also tear down all roles and Terraform artifacts"
+echo "rendering your secrets impossible to decrypt."
+echo "WARNING WARNING WARNING"
+echo
+echo "Enter 'yes' to continue"
+read ans
+if [[ "$ans" != "yes" ]]; then
+    exit -1
+fi
+echo
+
+cd ../kms-codecommit
+awsudo ${SETUP_ROLE}  terraform destroy -var-file=../quick/your-vars.tfvars <<EOF
+yes
+EOF
+cd ../quick
+
+cd ../terraform-iam
+awsudo ${IAM_ADM_ROLE}  terraform destroy -var-file=../quick/your-vars.tfvars <<EOF
+yes
+EOF
+cd ../quick
+
+rm -rf ${REPO_NAME}

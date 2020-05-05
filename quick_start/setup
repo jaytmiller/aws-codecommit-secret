@@ -1,0 +1,33 @@
+#! /bin/bash -e
+
+source your-vars.env
+
+cd ../terraform-iam
+terraform init
+awsudo ${IAM_ADM_ROLE}  terraform apply -var-file=../quick/your-vars.tfvars <<EOF
+yes
+EOF
+cd ../quick
+
+echo "Waiting a minute for the AWS roles."
+sleep 60
+echo "Done waiting."
+
+cd ../kms-codecommit
+terraform init
+awsudo ${SETUP_ROLE} terraform apply -var-file=../quick/your-vars.tfvars <<EOF
+yes
+EOF
+cd ../quick
+
+echo "Waiting a minute for the AWS repo."
+sleep 60
+echo "Done waiting."
+
+awsudo ${DECRYPT_ROLE}  git clone ${CC_REPO_NAME}
+cp ../kms-codecommit/.sops.yaml ${REPO_NAME}
+cp encrypt decrypt your-vars.env ${REPO_NAME}
+cd ${REPO_NAME}
+git add .
+git commit -m "Added initial .sops.yaml file, encrypt, decrypt, your-vars.env"
+awsudo ${ENCRYPT_ROLE}  git push origin master

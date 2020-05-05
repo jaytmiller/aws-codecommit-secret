@@ -1,0 +1,5 @@
+#! /bin/bash -e
+
+source your-vars.env
+
+awsudo ${DECRYPT_ROLE}  sops $1

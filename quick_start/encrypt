@@ -1,0 +1,11 @@
+#! /bin/bash -e
+
+source your-vars.env
+
+awsudo ${ENCRYPT_ROLE} sops $1
+
+git add $1
+
+git commit
+
+awsudo ${ENCRYPT_ROLE}  git push origin master
