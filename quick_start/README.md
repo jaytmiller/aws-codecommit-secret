@@ -2,8 +2,8 @@
 
 ## Overview
 
-These instructions and scripts are not a replacement for the README, just
-a codification of the process and system explained there in more detail.
+These instructions and scripts are not a replacement for the root README,
+just a codification of the process and system explained there in detail.
 
 ## Prerequisites
 
